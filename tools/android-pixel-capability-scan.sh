@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly VERSION="v0.1.0"
+readonly VERSION="v0.1.1"
 readonly MAX_ENTRIES=80
 
 print_kv() {
@@ -12,7 +12,9 @@ read_first_line() {
   local path="$1"
   local value=""
   if [[ -r "$path" ]]; then
-    IFS= read -r value < "$path" || true
+    IFS= read -r value < "$path" 2>/dev/null || {
+      [[ -n "$value" ]] || return 0
+    }
     value="${value//$'\r'/}"
     value="${value//$'\n'/}"
     printf '%s' "$value"
