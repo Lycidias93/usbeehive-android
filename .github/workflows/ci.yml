@@ -15,10 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        features:
-          - ""
-          - "--no-default-features"
-          - "--no-default-features --features cli,sysfs"
+        include:
+          - name: default
+            args: ""
+          - name: decoders-only
+            args: "--no-default-features"
+          - name: android-cli
+            args: "--no-default-features --features cli,sysfs"
 
     steps:
       - uses: actions/checkout@v5
@@ -37,13 +40,13 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ matrix.features }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ matrix.name }}
 
       - name: Build
-        run: cargo build --locked ${{ matrix.features }}
+        run: cargo build --locked ${{ matrix.args }}
 
       - name: Test
-        run: cargo test --locked ${{ matrix.features }}
+        run: cargo test --locked ${{ matrix.args }}
 
   lint:
     runs-on: ubuntu-latest
