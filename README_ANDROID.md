@@ -44,6 +44,8 @@ cargo build --release --no-default-features --features cli,sysfs
 
 This removes the `watch`, `udev`, `libc`, `dbus`, and `zbus` layers. A native Termux Rust toolchain is the preferred first build path. Cross-compilation with the Android NDK can follow after the native feasibility test.
 
+The pull-request CI matrix includes this exact no-libudev feature profile in addition to the upstream default and decoder-only builds. Rustfmt, Clippy, MSRV, rustdoc and the shell syntax check remain required before merge.
+
 ## Required kernel interfaces
 
 The useful result depends on what the Pixel kernel exports and what SELinux permits the caller to read:
