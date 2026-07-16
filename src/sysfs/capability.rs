@@ -161,7 +161,7 @@ mod tests {
             .unwrap();
         assert_eq!(typec.present, Some(false));
         assert!(!typec.readable);
-        assert_eq!(typec.entry_count, None);
+        assert!(typec.entry_count.is_none());
 
         fs::remove_dir_all(root).unwrap();
     }
