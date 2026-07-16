@@ -20,6 +20,20 @@ The probe distinguishes these states for every required sysfs area:
 
 No USB, charging, kernel, SELinux, Magisk, DNS, route, or device setting is changed.
 
+## Pre-build Pixel scan
+
+`tools/android-pixel-capability-scan.sh` provides the same first decision gate before a Rust toolchain is installed. It is read-only and prints only selected USB, Type-C, PD and power-supply attributes; USB serial-number attributes are deliberately excluded.
+
+The scanner has been checked with:
+
+- LF line endings;
+- `#!/usr/bin/env bash`;
+- `bash -n`;
+- no heredoc or here-string;
+- a Linux smoke run ending in `RESULT: USBEEHIVE_ANDROID_CAPABILITY_SCAN_DONE rc=0`.
+
+A Pixel run is still required to establish the real device capability state.
+
 ## Android build profile
 
 Android does not provide libudev or a normal desktop D-Bus session. Build only the CLI and sysfs layers:
