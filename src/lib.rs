@@ -75,6 +75,7 @@ pub use usb::{LinkSpeed, UsbDevice, UsbInterface};
 
 #[cfg(feature = "sysfs")]
 pub use sysfs::{
+    capability::{SysfsAreaCapability, SysfsCapabilityReport},
     error::{Error, Result},
     manager::{build_summaries, DeviceManager, Snapshot, SnapshotDiff},
     reader::Sysfs,
