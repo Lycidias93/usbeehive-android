@@ -32,6 +32,15 @@ The scanner has been checked with:
 - no heredoc or here-string;
 - a Linux smoke run ending in `RESULT: USBEEHIVE_ANDROID_CAPABILITY_SCAN_DONE rc=0`.
 
+For a rooted Pixel, `tools/android-pixel-root-capability-run.sh` is the guarded wrapper. It verifies both scripts, enters the existing root context with `su -c`, performs no writes or policy changes, and emits:
+
+```text
+RESULT: USBEEHIVE_ANDROID_ROOT_CHILD_SCAN_DONE rc=0
+RESULT: USBEEHIVE_ANDROID_ROOT_CAPABILITY_SCAN_DONE rc=0
+```
+
+The root wrapper is intended to be copied together with the scanner into Termux `$PREFIX/tmp` and launched through the established `cg-run-file` workflow. It does not install a service, persist a binary, modify SELinux, or edit a Magisk module.
+
 A Pixel run is still required to establish the real device capability state.
 
 ## Android build profile
@@ -62,8 +71,9 @@ Basic USB information can still work when Type-C or USB-PD classes are absent. F
 ## Deliberate limits
 
 - The first phase is CLI-only and read-only.
-- No automatic root escalation is implemented.
+- Root is used only through the explicit capability runner.
 - No SELinux policy changes are planned.
+- No persistent root service is installed.
 - No claims about e-marker support are made until a real Pixel capability report is captured.
 - `--watch` is excluded from the Android build; polling can be added later without libudev.
 
