@@ -14,6 +14,7 @@
 //! println!("{} devices", mgr.devices().len());
 //! ```
 
+pub mod capability;
 pub mod error;
 pub mod manager;
 pub mod power;
