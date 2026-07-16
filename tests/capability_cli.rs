@@ -68,7 +68,7 @@ fn capabilities_json_is_machine_readable() {
     assert!(output.status.success());
     let parsed: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert_eq!(parsed["areas"][1]["name"], "typeC");
-    assert_eq!(parsed["areas"][1]["present"], true);
-    assert_eq!(parsed["areas"][1]["readable"], true);
+    assert!(parsed["areas"][1]["present"].as_bool().unwrap());
+    assert!(parsed["areas"][1]["readable"].as_bool().unwrap());
     assert_eq!(parsed["areas"][1]["entryCount"], 1);
 }
