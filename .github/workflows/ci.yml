@@ -63,6 +63,9 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      - name: Shell syntax
+        run: bash -n tools/chatctx tools/cgflow tools/android-pixel-capability-scan.sh
+
       - name: Format check
         run: cargo fmt --all --check
 
