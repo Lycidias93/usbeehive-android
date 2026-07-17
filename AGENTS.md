@@ -164,3 +164,19 @@ Then:
    irreversible (you can only yank, never replace a version).
 6. `git push origin master && git push origin vX.Y.Z` (the tag triggers
    `.github/workflows/release.yml`).
+
+<!-- LYCIDIAS93_OWNER_REPO_MAINTENANCE_ADAPTER_V1_START -->
+## Owner-wide connector repository maintenance
+
+Before connector-based repository maintenance, read and apply:
+
+`Lycidias93/heimnetz-geraete@main:shared/github_owner_repo_maintenance_policy_v1.txt`
+
+`ConnectorClass=repo-maintenance`
+
+ChatGPT and Codex Desktop may read, search, audit and maintain this repository and every target branch. Allowed scope includes documentation, repository hygiene, Rust source, tests, fixtures, examples, non-secret configuration, CI/workflows, dependencies/lockfiles, refactors, issue/PR maintenance and justified repository-file deletion.
+
+Every write uses a dedicated work branch from the current target branch, an explicit file matrix, tests/guards and rollback. Task-level user GO authorizes merge after final base/head/diff/check/conflict/review/PR reverify; no second merge prompt.
+
+No direct target-branch write, force-push/history rewrite, release/tag/publish, branch deletion, repository/branch settings, webhooks, environments, secrets, credentials, deploy keys or host/runtime/network changes are authorized by this class. The release section above documents the project release process but does not grant connector permission to tag or publish.
+<!-- LYCIDIAS93_OWNER_REPO_MAINTENANCE_ADAPTER_V1_END -->
