@@ -15,7 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        features: ["", "--no-default-features"]
+        include:
+          - name: default
+            args: ""
+          - name: decoders-only
+            args: "--no-default-features"
+          - name: android-cli
+            args: "--no-default-features --features cli,sysfs"
 
     steps:
       - uses: actions/checkout@v5
@@ -34,13 +40,13 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ matrix.features }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ matrix.name }}
 
       - name: Build
-        run: cargo build --locked ${{ matrix.features }}
+        run: cargo build --locked ${{ matrix.args }}
 
       - name: Test
-        run: cargo test --locked ${{ matrix.features }}
+        run: cargo test --locked ${{ matrix.args }}
 
   lint:
     runs-on: ubuntu-latest
@@ -57,11 +63,22 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      - name: Shell syntax
+        run: bash -n tools/chatctx tools/cgflow tools/android-pixel-capability-scan.sh tools/android-pixel-root-capability-run.sh
+
       - name: Format check
         run: cargo fmt --all --check
 
       - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets --message-format=short -- -D warnings 2>&1 | tee clippy.log
+
+      - name: Upload Clippy diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clippy-diagnostics
+          path: clippy.log
+          if-no-files-found: error
 
   msrv:
     runs-on: ubuntu-latest

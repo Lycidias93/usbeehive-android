@@ -39,6 +39,10 @@ struct Cli {
     #[arg(long)]
     raw: bool,
 
+    /// Report whether the required sysfs areas exist and are readable.
+    #[arg(long)]
+    capabilities: bool,
+
     /// Override the sysfs root (default: /sys). Useful for fixture-based testing.
     #[arg(long, value_name = "PATH")]
     sysfs_root: Option<std::path::PathBuf>,
@@ -50,8 +54,12 @@ fn main() -> io::Result<()> {
         Some(p) => Sysfs::with_root(p),
         None => Sysfs::linux(),
     };
-    let mut mgr = DeviceManager::with_sysfs(sysfs);
 
+    if cli.capabilities {
+        return print_capabilities(&sysfs, cli.json);
+    }
+
+    let mut mgr = DeviceManager::with_sysfs(sysfs);
     let use_list = cli.list;
     if cli.watch {
         #[cfg(feature = "watch")]
@@ -72,6 +80,48 @@ fn main() -> io::Result<()> {
     } else {
         print_tree(&mut out, &mgr)
     }
+}
+
+fn print_capabilities(sysfs: &Sysfs, use_json: bool) -> io::Result<()> {
+    let report = sysfs.capability_report();
+    let stdout = io::stdout();
+    let mut out = stdout.lock();
+
+    if use_json {
+        serde_json::to_writer_pretty(&mut out, &report).map_err(io::Error::other)?;
+        writeln!(out)?;
+        return Ok(());
+    }
+
+    writeln!(
+        out,
+        "Sysfs capability report (root: {})",
+        report.root.display()
+    )?;
+    for area in &report.areas {
+        let present = match area.present {
+            Some(true) => "yes",
+            Some(false) => "no",
+            None => "unknown",
+        };
+        let entries = area
+            .entry_count
+            .map(|count| count.to_string())
+            .unwrap_or_else(|| "-".to_string());
+        writeln!(
+            out,
+            "- {}: present={} readable={} entries={} path={}",
+            area.name,
+            present,
+            if area.readable { "yes" } else { "no" },
+            entries,
+            area.path.display()
+        )?;
+        if let Some(error) = &area.error {
+            writeln!(out, "  error={error}")?;
+        }
+    }
+    Ok(())
 }
 
 #[cfg(feature = "watch")]
